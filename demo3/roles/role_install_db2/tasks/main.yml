@@ -1,0 +1,100 @@
+---
+
+#
+# CHECK
+# 
+
+- name: "Zeige Ziel Installations Pfad"
+  debug:
+    msg: "{{ db2_install_path }}"
+
+- name: "Ermittele ob Db2 Software bereits installiert ist"
+  # HINWEIS: Pruefung via stat auf binary ist hier eine Vereinfachung.
+  #          Besser: via db2ls Kommando pruefen -> Siehe db2facts-Modul
+  stat:
+    path: "{{ db2_install_path }}/bin/db2"
+  register: stat_db2_binary
+
+#
+# VORBEREITUNG
+# 
+
+- name: "Setze Größe von /opt"
+  become: true
+  lvol:
+    vg: rootvg
+    lv: opt
+    size: 6G
+    resizefs: true
+    shrink: no
+  when: not stat_db2_binary.stat.exists
+
+- name: "Erstelle Arbeitsverzeichnis"
+  become: true
+  file:
+    path: "/opt/workdir_db2_install"
+    state: directory
+  when: not stat_db2_binary.stat.exists
+
+- name: "Erstelle tmp im Arbeitsverzeichnis fuer DB2TMPDIR"
+  become: true
+  file:
+    path: "/opt/workdir_db2_install/tmp"
+    state: directory
+    mode: "0777"
+  when: not stat_db2_binary.stat.exists
+
+#
+# DOWNLOAD UND ANTWORTDATEI
+#
+
+- name: "Downloade und entpacke Db2 Software"
+  # Nutze shell-Modul mit wget + tar, anstelle von unarchive, da unarchive die Quelle
+  # erst runterläd und dann entpackt. was zu Platzproblemen führt.
+  become: true
+  shell: "wget -qO- {{ db2_install_source }} | tar -xvz -C /opt/workdir_db2_install/"
+  when: not stat_db2_binary.stat.exists
+
+- name: "Erstelle Antwortdatei"
+  become: true
+  template: 
+    src: "db2_{{ db2_edition}}_{{ db2_version.split('.')[0] }}.{{ db2_version.split('.')[1] }}.rsp"  # z. B.: db2_expc_V10.5.rsp"
+    dest: "/opt/workdir_db2_install/db2.rsp"
+    mode: "0655"
+  when: not stat_db2_binary.stat.exists
+
+# INSTALLATION
+
+- name: "Installiere Db2 Software"
+  become: true
+  command: "/opt/workdir_db2_install/{{ db2_edition }}/db2setup -d -t /opt/workdir_db2_install/db2setup.trc -r /opt/workdir_db2_install/db2.rsp" # e. g.: /tmp/expc/db2setup ...
+  environment:
+    - DB2TMPDIR: "/opt/workdir_db2_install/tmp"
+    - PATH: /usr/sbin:/usr/bin # Without /usr/sbin Fault Monitor start will fail
+  when: not stat_db2_binary.stat.exists
+
+# LIZENZ
+
+- name: "Kopiere Lizenz"
+  become: true
+  copy:
+    src: "{{ db2_license_filename }}"
+    dest: "/opt/workdir_db2_install"
+    mode: "0655"
+  when: "db2_license_filename != 'community'"
+
+- name: "Installiere Lizenz"
+  # Siehe Applying Db2 licenses 
+  # -> https://www.ibm.com/support/knowledgecenter/SSEPGG_11.5.0/com.ibm.db2.luw.qb.server.doc/doc/t0023608.html
+  become: true
+  command: "{{ db2_install_path }}/adm/db2licm -a /opt/workdir_db2_install/{{ db2_license_filename }}"
+  when: "db2_license_filename != 'community'"
+
+# AUFRÄUMEN
+
+- name: "Loesche Arbeitsverzeichnis"
+  become: true
+  file:
+    path: "/opt/workdir_db2_install"
+    state: absent
+

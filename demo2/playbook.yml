@@ -1,0 +1,9 @@
+---
+- hosts: all
+  roles:
+    - role: role_install_db2
+      vars:
+        db2_edition: "server_dec"
+        db2_version: "V11.5.5.0"
+
+ 

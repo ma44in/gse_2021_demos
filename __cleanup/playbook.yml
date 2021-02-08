@@ -1,0 +1,60 @@
+---
+- hosts: all
+  tasks:
+    - name: "Remove GSE User"
+      become: true
+      user:
+        name: gse2021
+        state: absent
+
+    - name: "Remove Home Dirs ans Files"
+      become: true
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "/var/spool/mail/gse2021" 
+        - "/home/gse2021/"
+  
+    - name: "Erstelle tmp im Arbeitsverzeichnis fuer DB2TMPDIR"
+      become: true
+      file:
+        path: "/opt/workdir_db2_deinstall_tmp"
+        state: directory
+        mode: "0777"
+
+    - name: "Ermittele ob Db2 Software bereits installiert ist"
+      stat:
+        path: "/opt/IBM/db2/V11.5.5.0/bin/db2"
+      register: stat_db2_binary
+
+    - name: "Stoppe Db2 Instanz"
+      become: true
+      become_user: "db2inst1"
+      shell: "source ~/sqllib/db2profile; db2stop force"
+      when: stat_db2_binary.stat.exists
+
+    - name: "Lösche Db2 Instanz"
+      become: true
+      db2_instance:
+        path: "/opt/IBM/db2/V11.5.5.0"
+        name: "db2inst1"
+        state: "absent"
+      when: stat_db2_binary.stat.exists
+
+    - name: "Deinstalliere Db2 Software"
+      become: true
+      command: "/opt/IBM/db2/V11.5.5.0/install/db2_deinstall -a" 
+      environment:
+        - DB2TMPDIR: "/opt/workdir_db2_deinstall_tmp"
+      when: stat_db2_binary.stat.exists
+
+    - name: "Remove Instance Dir"
+      become: true
+      file:
+        path: "/home/db2inst1"
+        state: absent
+
+
+
+    

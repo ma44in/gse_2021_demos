@@ -1,0 +1,47 @@
+---
+
+# USERS AND GROUPS
+
+- name: "Setze Variable für Gruppenname Prefix"
+  set_fact:
+    db2_group_name_prefix: "{{ db2_instance_name[3:8] }}" # db2inst1 -> inst1
+
+- name: "Erstelle Instanzspezifische Db2-Benutzergruppen"
+  become: true
+  group:
+    name: "{{ db2_group_name_prefix }}adm"
+    gid:  "{{ db2_instance_sysadmgroup_gid | int }}" 
+    state: present
+
+- name: "Erstelle Db2-Instanz-Benutzer"
+  become: true
+  user:
+    uid: "{{ db2_instance_user_uid }}"
+    name: "{{ db2_instance_name }}"
+    home: "/home/{{ db2_instance_name }}"
+    group: "{{ db2_group_name_prefix }}adm"
+
+#
+# DB2 INSTANZ
+# 
+
+- name: "Erstelle Db2 Instanz"
+  become: true
+  db2_instance:
+    path: "{{ db2_install_path }}"
+    name: "{{ db2_instance_name }}"
+    port: "{{ db2_instance_port }}"
+    type: "ESE"
+    auth_type: "SERVER_ENCRYPT" 
+    state: "present"
+  register: db2_instance_result
+
+- debug:
+    msg: "{{ db2_instance_result }}"
+
+- name: "DBAs in ADM-Gruppe aufnehmen"
+  become: true
+  user:
+    name: "{{ item }}"
+    groups: "{{ db2_group_name_prefix }}adm"
+  loop: "{{ db2_instance_adm_users | default([]) }}"

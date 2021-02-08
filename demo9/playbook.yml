@@ -1,0 +1,36 @@
+---
+- hosts: all
+  roles:
+    # Trick -> https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#embedding-modules-and-plugins-in-roles
+    - role: module_db2
+
+  tasks:
+
+    - name: "Ermittele alle Db2 Datenbanken"
+      db2_facts:
+        filter: "databases"
+      register: db2_facts
+
+    - debug:
+        msg: "{{ db2_facts.ansible_facts.db2_database_list }}"
+    
+    - name: "Zähle alle Tabellen "
+      db2_command:
+        instance: "{{ item.value.instance_name }}"
+        database: "{{ item.value.database_name }}"
+        command: "SELECT count(*) FROM SYSCAT.TABLES"
+      changed_when: False
+      loop: "{{  db2_facts.ansible_facts.db2_database_list | dict2items }}"
+      register: results
+
+    - debug:
+        msg: "{{ results }}"
+
+
+      
+
+
+        
+        
+
+ 

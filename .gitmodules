@@ -1,0 +1,12 @@
+[submodule "demo9/roles/module_db2"]
+	path = demo9/roles/module_db2
+	url = https://github.com/ma44in/module_db2.git
+[submodule "demo4/roles/module_db2"]
+	path = demo4/roles/module_db2
+	url = https://github.com/ma44in/module_db2.git
+[submodule "demo5a/roles/module_db2"]
+	path = demo5a/roles/module_db2
+	url = https://github.com/ma44in/module_db2.git
+[submodule "demo5b/roles/module_db2"]
+	path = demo5b/roles/module_db2
+	url = https://github.com/ma44in/module_db2.git

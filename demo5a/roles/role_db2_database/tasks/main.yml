@@ -1,0 +1,8 @@
+---
+- name: "Erstelle Db2 Datenbank"
+  db2_command:
+    instance: "db2inst1"
+    command: "CREATE DATABASE {{ db2_database_name }}"
+    ignorable_sqlcodes: "SQL1005N" # SQL1005N: The database alias ... already exists ...
+  register: command
+  changed_when: "'SQL1005N' not in command.stdout"

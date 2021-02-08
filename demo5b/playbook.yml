@@ -1,0 +1,15 @@
+---
+
+# ansible-playbook -i ./inventory ./playbook.yml -e db2_config_filename=db2inst1_GSE2021.yml
+
+- hosts: "{{ target }}"
+  vars_files: 
+    - "{{ playbook_dir }}/_configs/{{ db2_config_filename }}"
+  roles:
+    - role: module_db2
+    - role: role_install_db2
+    - role: role_db2_instance
+      vars:
+        db2_instance_adm_users:
+          - wendtm
+    - role: role_db2_database

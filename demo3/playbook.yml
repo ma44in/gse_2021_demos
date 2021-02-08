@@ -1,0 +1,18 @@
+---
+- hosts: all
+  roles:
+    - role: role_install_db2
+      vars:
+        db2_edition: "server_dec"
+        db2_version: "V11.5.5.0"
+
+    - role: role_db2_instance
+      vars:
+        db2_install_path: "/opt/IBM/db2/V11.5.5.0"
+        db2_instance_name: "db2inst1"
+        db2_instance_port: "60000"
+        db2_instance_user_uid: 20000
+        db2_instance_sysadmgroup_gid: 20001
+        
+
+ 

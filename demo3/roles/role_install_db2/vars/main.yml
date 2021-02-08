@@ -1,0 +1,9 @@
+---
+
+#
+# vars/main.yml - Variablen nicht überschreibar
+#
+
+# DB2 INSTALLTION SOURCE 
+# z. B.: V11.1.2.2_linuxx64_expc.tar.gz 
+db2_install_source:    "https://fileserver.company/public/db2_software/{{ db2_version }}_linuxx64_{{ db2_edition }}.tar.gz" 

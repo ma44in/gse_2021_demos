@@ -1,0 +1,46 @@
+*-----------------------------------------------------
+* Generated response file used by the DB2 Setup wizard
+* generation time: 29.01.18 15:32
+*-----------------------------------------------------
+*  Product Installation 
+LIC_AGREEMENT       = ACCEPT
+PROD       = DB2_SERVER_EDITION
+FILE       = {{ db2_install_path }}
+INSTALL_TYPE       = CUSTOM
+COMP       = IINR_APPLICATIONS_WRAPPER
+COMP       = SQL_PROCEDURES
+COMP       = ORACLE_DATA_SOURCE_SUPPORT
+COMP       = ODBC_DATA_SOURCE_SUPPORT
+COMP       = IINR_SCIENTIFIC_WRAPPER
+COMP       = INSTANCE_SETUP_SUPPORT
+COMP       = TERADATA_DATA_SOURCE_SUPPORT
+COMP       = LDAP_EXPLOITATION
+COMP       = FED_DATA_SOURCE_SUPPORT
+COMP       = CONNECT_SUPPORT
+COMP       = DB2_UPDATE_SERVICE
+COMP       = JDBC_DATA_SOURCE_SUPPORT
+COMP       = IINR_STRUCTURED_FILES_WRAPPER
+COMP       = BASE_DB2_ENGINE
+COMP       = REPL_CLIENT
+COMP       = JDK
+COMP       = DB2_SAMPLE_DATABASE
+COMP       = DB2_DATA_SOURCE_SUPPORT
+COMP       = JAVA_SUPPORT
+COMP       = SYBASE_DATA_SOURCE_SUPPORT
+COMP       = SQL_SERVER_DATA_SOURCE_SUPPORT
+COMP       = FIRST_STEPS
+COMP       = BASE_CLIENT
+COMP       = COMMUNICATION_SUPPORT_TCPIP
+*-----------------------------------------------
+*  Das properties 
+*-----------------------------------------------
+DAS_CONTACT_LIST       = LOCAL
+*-----------------------------------------------
+*  Installed Languages 
+*-----------------------------------------------
+LANG       = DE
+LANG       = EN
+*-----------------------------------------------
+*  Interactivity 
+*-----------------------------------------------
+INTERACTIVE       = NONE

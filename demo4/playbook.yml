@@ -1,0 +1,48 @@
+---
+- hosts: all
+  roles:
+    - role: role_install_db2
+      vars:
+        db2_edition: "server_dec"
+        db2_version: "V11.5.5.0"
+
+    # Trick -> https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#embedding-modules-and-plugins-in-roles
+    #
+    # "If you write a custom module ... you might wish to distribute it as part of a role. 
+    #  For example, if you write a module that helps configure your company’s internal software, 
+    #  and you want other people in your organization to use this module, but you do not want to 
+    #  tell everyone how to configure their Ansible library path, you can include the module in 
+    #  your internal_config role."
+    #
+    - role: module_db2
+
+    - role: role_db2_instance
+      vars:
+        db2_install_path: "/opt/IBM/db2/V11.5.5.0"
+        db2_instance_name: "db2inst1"
+        db2_instance_port: "60000"
+        db2_instance_user_uid: 20000
+        db2_instance_sysadmgroup_gid: 20001
+
+  tasks:
+
+    - name: "DBAs in ADM-Gruppe aufnehmen"
+      become: true
+      user:
+        name: "wendtm"
+        groups: "inst1adm"
+
+    - name: "Erstelle Db2 Datenbank"
+      db2_command:
+        instance: "db2inst1"
+        command: "CREATE DATABASE GSE2021"
+        ignorable_sqlcodes: "SQL1005N" # SQL1005N: The database alias ... already exists ...
+      register: command
+      changed_when: "'SQL1005N' not in command.stdout"
+      
+
+
+        
+        
+
+ 

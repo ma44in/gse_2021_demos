@@ -1,0 +1,10 @@
+---
+- hosts: all
+  tasks:
+    - name: "Create GSE User"
+      become: true
+      user:
+        name: gse2021
+        uid: 10999
+        create_home: yes
+ 

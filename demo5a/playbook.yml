@@ -1,0 +1,27 @@
+---
+
+# Eigene Rolle: role_db2_database
+
+- hosts: all
+  roles:
+    - role: role_install_db2
+      vars:
+        db2_edition: "server_dec"
+        db2_version: "V11.5.5.0"
+
+    # Trick -> https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#embedding-modules-and-plugins-in-roles
+    - role: module_db2
+
+    - role: role_db2_instance
+      vars:
+        db2_install_path: "/opt/IBM/db2/V11.5.5.0"
+        db2_instance_name: "db2inst1"
+        db2_instance_port: "60000"
+        db2_instance_user_uid: 20000
+        db2_instance_sysadmgroup_gid: 20001
+        db2_instance_adm_users:
+          - wendtm
+
+    - role: role_db2_database
+      vars:
+        db2_database_name: "GSE2021"

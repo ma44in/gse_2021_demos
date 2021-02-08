@@ -1,0 +1,11 @@
+---
+
+#
+# defaults/main.yml - Variablen von außen überschreibar
+#
+
+# TARGET INSTALL PATH
+db2_install_path: "/opt/IBM/db2/{{ db2_version }}"
+
+# DB2 LICENSE FILENAME
+db2_license_filename: "community"
